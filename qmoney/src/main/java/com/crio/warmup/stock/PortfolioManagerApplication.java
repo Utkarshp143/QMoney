@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -45,8 +46,17 @@ public class PortfolioManagerApplication {
   //  2. You can use "./gradlew build" to check if your code builds successfully.
 
   public static List<String> mainReadFile(String[] args) throws IOException, URISyntaxException {
+    File file = resolveFileFromResources(args[0]);
+   // String content = readFileAsString(file);
+    ObjectMapper objectMapper = getObjectMapper();
+    PortfolioTrade[] trades = objectMapper.readValue(file, PortfolioTrade[].class);
 
-     return Collections.emptyList();
+    List<String> result = new ArrayList<>();
+    for(PortfolioTrade trade : trades){
+      System.out.println(result.add(trade.getSymbol()));
+    }
+  //return Collections.emptyList();
+    return result;
   }
 
 
