@@ -13,6 +13,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import org.springframework.web.client.RestTemplate;
 
@@ -21,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -165,15 +167,33 @@ public class PortfolioManagerApplication {
   // Note:
   // Remember to confirm that you are getting same results for annualized returns as in Module 3.
   public static List<String> mainReadQuotes(String[] args) throws IOException, URISyntaxException {
-    ObjectMapper objectMapper = getObjectMapper();
-    List<PortfolioTrade> trades = Arrays.asList(objectMapper.readValue(resolveFileFromResources(args[0]),PortfolioTrade[].class));
-    List<TotalReturnsDto> sortedByValue = mainReadQuotesHelper(args,trades);
-    Collections.sort(sortedByValue,closingComparator);
-    List<String> stocks = new ArrayList<String>();
-    for(TotalReturnsDto trd : sortedByValue){
-      stocks.add(trd.getSymbol());
-    } 
-     return stocks;
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    LocalDate endDate = LocalDate.parse(args[1], formatter);
+    String token = "31538ba9b3b4984d4577c6ae43e001ec8c0e2d21";
+    RestTemplate restTemplate = new RestTemplate();
+    List <TotalReturnsDto> totalReturnsDtosList = new ArrayList<>();
+    List<String> result = new ArrayList<>();
+
+    List<PortfolioTrade> trades = readTradesFromJson(args[0]);
+    for(PortfolioTrade trade : trades)
+    {
+     String url = prepareUrl(trade, endDate, token);
+     TiingoCandle[] tingo = restTemplate.getForObject(url, TiingoCandle[].class);
+    TotalReturnsDto totalReturnsDto = new TotalReturnsDto(trade.getSymbol(), tingo[tingo.length-1].getClose());
+    totalReturnsDtosList.add(totalReturnsDto);
+    }
+    Collections.sort(totalReturnsDtosList,closingComparator);
+    for(TotalReturnsDto t : totalReturnsDtosList){
+      result.add(t.getSymbol());
+    }
+    return result;
+    //List<TotalReturnsDto> sortedByValue = mainReadQuotesHelper(args,trades);
+    // // Collections.sort(sortedByValue,closingComparator);
+    // // List<String> stocks = new ArrayList<String>();
+    // // for(TotalReturnsDto trd : sortedByValue){
+    // //   stocks.add(trd.getSymbol());
+    // // } 
+    //  return stocks;
   }
 
   public static final Comparator<TotalReturnsDto> closingComparator = new Comparator<TotalReturnsDto>() {
@@ -186,14 +206,17 @@ public class PortfolioManagerApplication {
   //  ./gradlew test --tests PortfolioManagerApplicationTest.readTradesFromJson
   //  ./gradlew test --tests PortfolioManagerApplicationTest.mainReadFile
   public static List<PortfolioTrade> readTradesFromJson(String filename) throws IOException, URISyntaxException {
-     return Collections.emptyList();
+    ObjectMapper objectMapper = getObjectMapper();
+    return Arrays.asList(objectMapper.readValue(resolveFileFromResources(filename),PortfolioTrade[].class));
+    
   }
 
 
   // TODO:
   //  Build the Url using given parameters and use this function in your code to cann the API.
   public static String prepareUrl(PortfolioTrade trade, LocalDate endDate, String token) {
-     return "";
+     String url = "https://api.tiingo.com/tiingo/daily/"+trade.getSymbol()+"/prices?startDate="+trade.getPurchaseDate().toString()+"&endDate="+endDate.toString()+"&token="+token;
+    return url;
   }
 
 
