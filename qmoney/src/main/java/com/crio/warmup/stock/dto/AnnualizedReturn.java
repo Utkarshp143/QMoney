@@ -1,8 +1,11 @@
 
 package com.crio.warmup.stock.dto;
+//import java.util.Comparator;
 
-public class AnnualizedReturn {
+import javax.xml.crypto.dsig.keyinfo.RetrievalMethod;
 
+public class AnnualizedReturn implements Comparable<AnnualizedReturn>{
+//  public static final Comparator closingComparator = null;
   private final String symbol;
   private final Double annualizedReturn;
   private final Double totalReturns;
@@ -24,4 +27,13 @@ public class AnnualizedReturn {
   public Double getTotalReturns() {
     return totalReturns;
   }
+  public int compareTo(AnnualizedReturn a){  
+    if(this.getAnnualizedReturn() == a.getAnnualizedReturn())
+      return 0;
+    else if(this.getAnnualizedReturn() < a.getAnnualizedReturn())
+      return 1;
+    else
+      return -1;
+    }  
+  
 }
