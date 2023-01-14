@@ -6,6 +6,9 @@ import javax.xml.crypto.dsig.keyinfo.RetrievalMethod;
 
 public class AnnualizedReturn implements Comparable<AnnualizedReturn>{
 //  public static final Comparator closingComparator = null;
+
+
+
   private final String symbol;
   private final Double annualizedReturn;
   private final Double totalReturns;

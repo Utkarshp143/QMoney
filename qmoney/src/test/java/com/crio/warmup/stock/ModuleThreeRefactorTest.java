@@ -53,7 +53,7 @@ class ModuleThreeRefactorTest {
     trade.setPurchaseDate(LocalDate.parse("2020-01-01"));
     trade.setSymbol("AAPL");
     List<Candle> candleList = PortfolioManagerApplication.fetchCandles(trade, LocalDate.parse("2020-01-05"),
-           PortfolioManagerApplication.getToken());
+            PortfolioManagerApplication.getToken());
     Assertions.assertEquals(296.24, candleList.get(0).getOpen(), 0.1);
     Assertions.assertEquals(297.15, candleList.get(candleList.size()-1).getOpen(), 0.1);
   }

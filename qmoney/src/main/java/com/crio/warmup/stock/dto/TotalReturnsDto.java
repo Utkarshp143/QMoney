@@ -7,6 +7,7 @@ import java.util.Comparator;
 //private String symbol;
 public class TotalReturnsDto {
   public static final Comparator closingComparator = null;
+
   private String symbol;
   private Double closingPrice;
 
