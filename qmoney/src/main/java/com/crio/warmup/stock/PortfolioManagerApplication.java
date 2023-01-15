@@ -23,7 +23,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import org.springframework.cglib.core.Local;
 import org.springframework.objenesis.instantiator.android.Android10Instantiator;
-//import org.springframework.http.codec.multipart.MultipartParser.Token;
+// import org.springframework.http.codec.multipart.MultipartParser.Token;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -50,7 +50,8 @@ import org.springframework.web.client.RestTemplate;
 
 public class PortfolioManagerApplication {
 
-
+  // old token
+  
   //static String TOKEN = "31538ba9b3b4984d4577c6ae43e001ec8c0e2d21";
   //static String URL = "https://api.tiingo.com/tiingo/daily/$SYMBOL/prices?startDate=$STARTDATE&endDate=$ENDDATE&token=$APIKEY";
 
@@ -548,8 +549,8 @@ public class PortfolioManagerApplication {
 
 
   public static String getToken() {
-    //return "31538ba9b3b4984d4577c6ae43e001ec8c0e2d21";
-    return "59892a96542d99303fafeedbe3f970bcd2100c5c";
+    return "31538ba9b3b4984d4577c6ae43e001ec8c0e2d21";
+    //return "59892a96542d99303fafeedbe3f970bcd2100c5c";
   }
 }
 

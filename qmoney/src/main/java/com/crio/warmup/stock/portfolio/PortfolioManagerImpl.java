@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.springframework.web.client.RestTemplate;
 
-public class PortfolioManagerImpl extends  PortfolioManagerApplication implements PortfolioManager{
+public class PortfolioManagerImpl  implements PortfolioManager{
 
 private RestTemplate restTemplate;
 
@@ -70,7 +70,7 @@ private RestTemplate restTemplate;
         
     String url = buildUri(symbol, from, to);
 
-    TiingoCandle[] tiingoCandles2 = getRestTemplate().getForObject(url, TiingoCandle[].class);
+    TiingoCandle[] tiingoCandles2 = this.restTemplate.getForObject(url, TiingoCandle[].class);
     return Arrays.asList(tiingoCandles2);
   }
 
@@ -88,14 +88,14 @@ private RestTemplate restTemplate;
   }
 
   public  List<AnnualizedReturn> calculateAnnualizedReturn(List<PortfolioTrade> portfolioTrades,
-      LocalDate endDate)
+      LocalDate endDate) throws JsonProcessingException
   {
 
     List<AnnualizedReturn> annualizedReturnsList = new ArrayList<>();
 
     for (PortfolioTrade trade : portfolioTrades) {
       
-      List<Candle> candles = fetchCandles(trade, endDate, getToken());
+      List<Candle> candles = getStockQuote(trade.getSymbol(), trade.getPurchaseDate(), endDate);
 
       // defining price of buy and sell Price
 
@@ -119,6 +119,19 @@ private RestTemplate restTemplate;
     return annualizedReturnsList;
 
   }
+  private  Double getOpeningPriceOnStartDate(List<Candle> candles) {
+    return candles.get(0).getOpen();
+     //return 0.0;
+  }
 
+
+  private Double getClosingPriceOnEndDate(List<Candle> candles) {
+     return candles.get(candles.size()-1).getClose();
+    //return 0.0;
+  }
+  private String getToken() {
+    return "31538ba9b3b4984d4577c6ae43e001ec8c0e2d21";
+    //return "59892a96542d99303fafeedbe3f970bcd2100c5c";
+  }
 
 }
