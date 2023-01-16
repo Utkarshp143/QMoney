@@ -349,6 +349,7 @@ public class PortfolioManagerApplication {
     TiingoCandle[] tiingoCandles2 = getRestTemplate().getForObject(url, TiingoCandle[].class);
     return Arrays.asList(tiingoCandles2);
   }
+  
 
 //private static PortfolioTrade[] getPortfolioTradesFromFile(String file) throws URISyntaxException,IOException{
   // String contents = file.toString();
