@@ -4,10 +4,12 @@ package com.crio.warmup.stock.portfolio;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import com.crio.warmup.stock.PortfolioManagerApplication;
+
 import com.crio.warmup.stock.dto.AnnualizedReturn;
 import com.crio.warmup.stock.dto.Candle;
 import com.crio.warmup.stock.dto.PortfolioTrade;
 import com.crio.warmup.stock.dto.TiingoCandle;
+import com.crio.warmup.stock.quotes.StockQuotesService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -27,15 +29,30 @@ import java.util.stream.Collectors;
 import org.springframework.web.client.RestTemplate;
 
 public class PortfolioManagerImpl  implements PortfolioManager{
-
+private StockQuotesService service;
 private RestTemplate restTemplate;
 
+protected PortfolioManagerImpl(String provider,RestTemplate restTemplate) {
+  //this.restTemplate = restTemplate;
+}
+
+public PortfolioManagerImpl(StockQuotesService service2, RestTemplate restTemplate2) {
+  //  this.restTemplate = restTemplate2;
+    this.service = service2; 
+  }
+
+  public PortfolioManagerImpl(StockQuotesService service){
+  //  this.restTemplate = new RestTemplate();
+    this.service = service;
+  }
+
+public PortfolioManagerImpl(RestTemplate restTemplate2) {
+  // this.restTemplate =  restTemplate2;
+}
 
   // Caution: Do not delete or modify the constructor, or else your build will break!
   // This is absolutely necessary for backward compatibility
-  protected PortfolioManagerImpl(RestTemplate restTemplate) {
-    this.restTemplate = restTemplate;
-  }
+  
 
 
   //TODO: CRIO_TASK_MODULE_REFACTOR
@@ -54,6 +71,8 @@ private RestTemplate restTemplate;
 
 
 
+
+
   private Comparator<AnnualizedReturn> getComparator() {
     return Comparator.comparing(AnnualizedReturn::getAnnualizedReturn).reversed();
   }
@@ -66,12 +85,9 @@ private RestTemplate restTemplate;
 
 
   public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to)
-      throws JsonProcessingException {
+      throws Exception {
         
-    String url = buildUri(symbol, from, to);
-
-    TiingoCandle[] tiingoCandles2 = this.restTemplate.getForObject(url, TiingoCandle[].class);
-    return Arrays.asList(tiingoCandles2);
+    return this.service.getStockQuote(symbol, from, to);
   }
 
   protected String buildUri(String symbol, LocalDate startDate, LocalDate endDate) {
@@ -88,7 +104,7 @@ private RestTemplate restTemplate;
   }
 
   public  List<AnnualizedReturn> calculateAnnualizedReturn(List<PortfolioTrade> portfolioTrades,
-      LocalDate endDate) throws JsonProcessingException
+      LocalDate endDate) throws Exception
   {
 
     List<AnnualizedReturn> annualizedReturnsList = new ArrayList<>();
@@ -133,5 +149,12 @@ private RestTemplate restTemplate;
     return "31538ba9b3b4984d4577c6ae43e001ec8c0e2d21";
     //return "59892a96542d99303fafeedbe3f970bcd2100c5c";
   }
+
+
+  // ¶TODO: CRIO_TASK_MODULE_ADDITIONAL_REFACTOR
+  //  Modify the function #getStockQuote and start delegating to calls to
+  //  stockQuoteService provided via newly added constructor of the class.
+  //  You also have a liberty to completely get rid of that function itself, however, make sure
+  //  that you do not delete the #getStockQuote function.
 
 }
