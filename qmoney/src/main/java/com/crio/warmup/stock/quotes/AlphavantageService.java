@@ -28,6 +28,55 @@ public class AlphavantageService implements StockQuotesService {
   {
     this.restTemplate = restTemplate;
   }
+  @Override
+  public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to)
+      throws Exception {
+        String responseString = restTemplate.getForObject(getUrl(symbol), String.class);
+
+        AlphavantageDailyResponse alphavantageDailyResponse;
+        try 
+        {
+          alphavantageDailyResponse =
+              getObjectMapper().readValue(responseString, AlphavantageDailyResponse.class);
+          if (alphavantageDailyResponse.getCandles() == null || responseString == null)
+          {
+            throw new Exception("Invalid Response Found");
+          }
+        } 
+        catch (JsonProcessingException e) 
+        {
+          throw new Exception(e.getMessage());
+        }
+
+        List<Candle> alphavantageCandles = new ArrayList<>();
+        Map<LocalDate, AlphavantageCandle> map = alphavantageDailyResponse.getCandles();
+        
+        for (LocalDate localDate : map.keySet()) 
+        {
+          if (localDate.compareTo(from) >= 0 && localDate.compareTo(to) <= 0) {
+            AlphavantageCandle alphavantageCandle =
+                alphavantageDailyResponse.getCandles().get(localDate);
+            alphavantageCandle.setDate(localDate);
+            alphavantageCandles.add(alphavantageCandle);
+          }
+        }
+        return alphavantageCandles.stream().sorted(Comparator.comparing(Candle::getDate))
+            .collect(Collectors.toList());
+      }
+
+  String apiKey = "F3ZY4OBWN3PEJOJ3";
+  public String getUrl(String symbol){
+    return "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol="+symbol+"&apikey="+apiKey;
+  }
+  
+  private static ObjectMapper getObjectMapper() {
+    ObjectMapper objectMapper = new ObjectMapper();
+    objectMapper.registerModule(new JavaTimeModule());
+    return objectMapper;
+  }
+}
+
+
   // TODO: CRIO_TASK_MODULE_ADDITIONAL_REFACTOR
   //  Implement the StockQuoteService interface as per the contracts. Call Alphavantage service
   //  to fetch daily adjusted data for last 20 years.
@@ -50,35 +99,8 @@ public class AlphavantageService implements StockQuotesService {
   //  2. Run the tests using command below and make sure it passes:
   //    ./gradlew test --tests AlphavantageServiceTest
 
-  @Override
-  public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to)
-      throws Exception {
-      try
-      {
-        String url = getUrl(symbol);
-        String result = restTemplate.getForObject(url,String.class);
-        if(result == null || result.isEmpty())
-        {
-          throw new Exception("No Response");
-        }
-        System.out.print(result);
-        AlphavantageDailyResponse alphavantageDailyResponse = getObjectMapper().readValue(result, AlphavantageDailyResponse.class);
-        Map<LocalDate, AlphavantageCandle> candles = alphavantageDailyResponse.getCandles();
-        Map<LocalDate, AlphavantageCandle> filteredCandles = candles.entrySet().stream()
-            .filter(x -> x.getKey().compareTo(from) >= 0 && x
-              .getKey().compareTo(to) <= 0).sorted((a, b) -> {
-                return a.getKey().compareTo(b.getKey());
-              }).collect(Collectors.toMap(x -> x.getKey(), x -> x.getValue()));
-        filteredCandles.forEach((k, v) -> v.setDate(k));
-        List<Candle> answer = new ArrayList<Candle>(filteredCandles.values());
-        Collections.reverse(answer);
-        return answer;
-      } catch (RuntimeException e) {
-        e.printStackTrace();
-      }
-      return Collections.emptyList();
-      }
-    
+  
+
 
     // TODO Auto-generated method stub
     
@@ -89,16 +111,3 @@ public class AlphavantageService implements StockQuotesService {
   //  1. Write a method to create appropriate url to call Alphavantage service. The method should
   //     be using configurations provided in the {@link @application.properties}.
   //  2. Use this method in #getStockQuote.
-
-  String apiKey = "F3ZY4OBWN3PEJOJ3";
-  public String getUrl(String symbol){
-    return "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol="+symbol+"&apikey="+apiKey;
-  }
-  
-  private static ObjectMapper getObjectMapper() {
-    ObjectMapper objectMapper = new ObjectMapper();
-    objectMapper.registerModule(new JavaTimeModule());
-    return objectMapper;
-  }
-}
-

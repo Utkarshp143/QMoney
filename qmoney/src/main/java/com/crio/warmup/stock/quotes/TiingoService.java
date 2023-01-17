@@ -27,12 +27,12 @@ public class TiingoService implements StockQuotesService {
   public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to) 
       throws JsonProcessingException,Exception {
     try {
-      ObjectMapper om = getObjectMapper();
+ 
       String result = restTemplate.getForObject(buildUri(symbol, from, to), String.class);
       if (result == null || result.isEmpty()) {
         throw new Exception("No response");
       }
-      List<TiingoCandle> collection = om
+      List<TiingoCandle> collection = getObjectMapper()
           .readValue(result, new TypeReference<ArrayList<TiingoCandle>>() {
           });
       return new ArrayList<Candle>(collection);
@@ -49,11 +49,16 @@ public class TiingoService implements StockQuotesService {
   }
 
   protected String buildUri(String symbol, LocalDate startDate, LocalDate endDate) {
-    String uriTemplate = "https://api.tiingo.com/tiingo/daily/" + symbol + "/prices?" + "startDate="
+    return "https://api.tiingo.com/tiingo/daily/" + symbol + "/prices?" + "startDate="
         + startDate.toString() + "&endDate=" + endDate.toString() + "&token="
-        + "56ced5d79d2bfeedeb35aa03a11d6d68a33074f7";
-    return uriTemplate;
+        + getToken();
+    
   }
+
+public static String getToken() {
+  return "31538ba9b3b4984d4577c6ae43e001ec8c0e2d21";
+  //return "59892a96542d99303fafeedbe3f970bcd2100c5c";
+}
   // TODO: CRIO_TASK_MODULE_ADDITIONAL_REFACTOR
   //  Now we will be separating communication with Tiingo from PortfolioManager.
   //  Generate the functions as per the declarations in the interface and then
@@ -167,11 +172,6 @@ public class TiingoService implements StockQuotesService {
   
 // }
 
-
-// public static String getToken() {
-//   return "31538ba9b3b4984d4577c6ae43e001ec8c0e2d21";
-//   //return "59892a96542d99303fafeedbe3f970bcd2100c5c";
-// }
 //   protected String buildUri(String symbol, LocalDate startDate, LocalDate endDate) {
 
 //     return "https:api.tiingo.com/tiingo/daily/"+"symbol"+"/prices?"
