@@ -9,6 +9,7 @@ import com.crio.warmup.stock.dto.AnnualizedReturn;
 import com.crio.warmup.stock.dto.Candle;
 import com.crio.warmup.stock.dto.PortfolioTrade;
 import com.crio.warmup.stock.dto.TiingoCandle;
+import com.crio.warmup.stock.exception.StockQuoteServiceException;
 import com.crio.warmup.stock.quotes.StockQuotesService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,8 +29,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.springframework.web.client.RestTemplate;
 
+// public class PortfolioManagerImpl implements PortfolioManager {
+
 public class PortfolioManagerImpl  implements PortfolioManager{
 private StockQuotesService service;
+private RestTemplate restTemplate;
 
 protected PortfolioManagerImpl(String provider,RestTemplate restTemplate) {
 }
@@ -43,13 +47,24 @@ public PortfolioManagerImpl(StockQuotesService service2, RestTemplate restTempla
     this.service = service;
   }
 
-public PortfolioManagerImpl(RestTemplate restTemplate2) {
+// public PortfolioManagerImpl(RestTemplate restTemplate2) {
+// }
+
+protected PortfolioManagerImpl(RestTemplate restTemplate) {
+  this.restTemplate = restTemplate;
 }
+
 
 
 private Comparator<AnnualizedReturn> getComparator() {
   return Comparator.comparing(AnnualizedReturn::getAnnualizedReturn).reversed();
 }
+
+
+
+// private Comparator<AnnualizedReturn> getComparator() {
+//   return Comparator.comparing(AnnualizedReturn::getAnnualizedReturn).reversed();
+// }
 
 
 
@@ -102,6 +117,8 @@ private Double getClosingPriceOnEndDate(List<Candle> candles) {
 // }
 
 
+
+
   // Caution: Do not delete or modify the constructor, or else your build will break!
   // This is absolutely necessary for backward compatibility
   
@@ -129,8 +146,6 @@ private Double getClosingPriceOnEndDate(List<Candle> candles) {
 
 
 
-
-
 //   protected String buildUri(String symbol, LocalDate startDate, LocalDate endDate) {
 
 //     String uriTemplate = "https:api.tiingo.com/tiingo/daily/$SYMBOL/prices?"
@@ -150,5 +165,7 @@ private Double getClosingPriceOnEndDate(List<Candle> candles) {
   //  stockQuoteService provided via newly added constructor of the class.
   //  You also have a liberty to completely get rid of that function itself, however, make sure
   //  that you do not delete the #getStockQuote function.
+
+
 
 }

@@ -52,9 +52,7 @@ class TiingoServiceTest {
       + "\":2301428,\"divCash\":0.0,\"splitFactor\":1.0}]";
 
   @Test
-
   @MockitoSettings(strictness = Strictness.LENIENT)
-  
   void getStockQuoteSingle() throws Exception {
     Mockito.doReturn(sampleTiingoResponse)
         .when(restTemplate).getForObject(anyString(), eq(String.class));

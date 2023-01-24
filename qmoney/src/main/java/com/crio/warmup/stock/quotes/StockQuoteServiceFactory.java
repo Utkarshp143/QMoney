@@ -20,6 +20,14 @@ public enum StockQuoteServiceFactory {
   }
 }
 
+// INSTANCE;
+
+
+// public StockQuotesService getService(String provider,  RestTemplate restTemplate) {
+
+// }
+// }
+
   // Note: (Recommended reading)
   // Pros and cons of implementing Singleton via enum.
   // https://softwareengineering.stackexchange.com/q/179386/253205
@@ -35,3 +43,4 @@ public enum StockQuoteServiceFactory {
   //  the constructor of corresponding class.
   //  Run the tests using command below and make sure it passes
   //  ./gradlew test --tests StockQuoteServiceFactory
+ 

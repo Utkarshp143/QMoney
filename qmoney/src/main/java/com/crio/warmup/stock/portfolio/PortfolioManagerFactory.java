@@ -17,6 +17,11 @@ public class PortfolioManagerFactory {
   }
 
 
+  // public static PortfolioManager getPortfolioManager(RestTemplate restTemplate) {
+
+  // }
+
+
 
 
 
@@ -35,5 +40,7 @@ public class PortfolioManagerFactory {
       StockQuotesService service = StockQuoteServiceFactory.getService(provider, restTemplate);
       return new PortfolioManagerImpl(service,restTemplate);
    }
+
+
 
 }
