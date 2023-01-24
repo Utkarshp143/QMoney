@@ -8,6 +8,11 @@ import java.util.List;
 
 public interface StockQuotesService {
 
+  List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to)
+      throws JsonProcessingException, Exception;
+}
+  //CHECKSTYLE:ON
+
   // TODO: CRIO_TASK_MODULE_ADDITIONAL_REFACTOR
   //  The implementation of this functions will be doing following tasks:
   //    1. Build the appropriate url to communicate with the third-party service.
@@ -20,9 +25,3 @@ public interface StockQuotesService {
 
 
   //CHECKSTYLE:OFF
-  List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to)
-      throws JsonProcessingException, Exception
-  ;
-  //CHECKSTYLE:ON
-
-}

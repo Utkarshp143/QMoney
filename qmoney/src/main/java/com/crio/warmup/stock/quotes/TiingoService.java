@@ -27,7 +27,6 @@ public class TiingoService implements StockQuotesService {
   public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to) 
       throws JsonProcessingException,Exception {
     try {
- 
       String result = restTemplate.getForObject(buildUri(symbol, from, to), String.class);
       if (result == null || result.isEmpty()) {
         throw new Exception("No response");

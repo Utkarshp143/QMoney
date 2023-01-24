@@ -32,7 +32,8 @@ public class AlphavantageService implements StockQuotesService {
   public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to)
       throws Exception {
         String responseString = restTemplate.getForObject(getUrl(symbol), String.class);
-
+        // String response = restTemplate.getForObject(buildUri(symbol), String.class);
+        System.out.println(responseString);
         AlphavantageDailyResponse alphavantageDailyResponse;
         try 
         {

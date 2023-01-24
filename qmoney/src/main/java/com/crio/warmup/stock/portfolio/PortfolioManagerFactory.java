@@ -3,7 +3,6 @@ package com.crio.warmup.stock.portfolio;
 
 import com.crio.warmup.stock.quotes.StockQuoteServiceFactory;
 import com.crio.warmup.stock.quotes.StockQuotesService;
-import java.lang.Deprecated;
 import org.springframework.web.client.RestTemplate;
 
 public class PortfolioManagerFactory {
@@ -13,8 +12,8 @@ public class PortfolioManagerFactory {
   //  Remember, pass along the RestTemplate argument that is provided to the new instance.
 
   public static PortfolioManager getPortfolioManager(RestTemplate restTemplate) {
-     PortfolioManager PortfolioManager;
-    return PortfolioManager  = new PortfolioManagerImpl(restTemplate);
+     PortfolioManager portfolioManager;
+    return portfolioManager  = new PortfolioManagerImpl(restTemplate);
   }
 
 

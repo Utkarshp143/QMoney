@@ -5,11 +5,25 @@ import org.springframework.web.client.RestTemplate;
 
 public enum StockQuoteServiceFactory {
 
+  INSTANCE;
+
+  public static StockQuotesService getService(String provider,  RestTemplate restTemplate) 
+  {
+    if(provider.equalsIgnoreCase("tiingo"))
+    {
+      return new TiingoService(restTemplate);
+    }
+    else
+    {
+      return new AlphavantageService(restTemplate);
+    }
+  }
+}
+
   // Note: (Recommended reading)
   // Pros and cons of implementing Singleton via enum.
   // https://softwareengineering.stackexchange.com/q/179386/253205
 
-  INSTANCE;
  // StockQuoteService instance;
   // TODO: CRIO_TASK_MODULE_ADDITIONAL_REFACTOR
   //  Make sure that you have implemented TiingoService and AlphavantageService
@@ -21,18 +35,3 @@ public enum StockQuoteServiceFactory {
   //  the constructor of corresponding class.
   //  Run the tests using command below and make sure it passes
   //  ./gradlew test --tests StockQuoteServiceFactory
-
-  public static StockQuotesService getService(String provider,  RestTemplate restTemplate) {
-    if(provider.equalsIgnoreCase("tiingo"))
-    {
-       
-      return new TiingoService(restTemplate);
-      
-    }
-    else
-    {
-      return new AlphavantageService(restTemplate);
-    }
-
-  }
-}
