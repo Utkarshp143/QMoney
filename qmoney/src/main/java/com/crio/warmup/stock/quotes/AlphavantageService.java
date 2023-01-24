@@ -45,9 +45,11 @@ public class AlphavantageService implements StockQuotesService {
         {
           alphavantageDailyResponse =
               getObjectMapper().readValue(responseString, AlphavantageDailyResponse.class);
-          if (alphavantageDailyResponse.getCandles() == null || responseString == null)
+          
+          System.out.println(alphavantageDailyResponse); 
+             if (alphavantageDailyResponse.getCandles() == null || responseString == null)
           {
-            throw new Exception("Invalid Response Found");
+            throw new StockQuoteServiceException("Invalid Response Found");
           }
         } 
         catch (JsonProcessingException e) 
