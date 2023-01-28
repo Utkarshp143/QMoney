@@ -109,33 +109,33 @@ private Double getClosingPriceOnEndDate(List<Candle> candles) {
    return candles.get(candles.size()-1).getClose();
 }
 
-@Override
-public List<AnnualizedReturn> calculateAnnualizedReturnParallel(
-    List<PortfolioTrade> portfolioTrades, LocalDate endDate, int numThreads)
-    throws StockQuoteServiceException {
+// @Override
+// public List<AnnualizedReturn> calculateAnnualizedReturnParallel(
+//     List<PortfolioTrade> portfolioTrades, LocalDate endDate, int numThreads)
+//     throws StockQuoteServiceException {
 
-  ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
-  List<AnnualizedReturn> annualizedReturns = new ArrayList<>();
-  List<AnnualizedReturnTask> annualizedReturnTaskList = new ArrayList<>();
-  List<Future<AnnualizedReturn>> annualizedReturnFutureList = null;
-  for (PortfolioTrade portfolioTrade : portfolioTrades)
-    annualizedReturnTaskList
-        .add(new AnnualizedReturnTask(portfolioTrade, service, endDate));
-  try {
-    annualizedReturnFutureList = executorService.invokeAll(annualizedReturnTaskList);
-  } catch (InterruptedException e) {
-    throw new StockQuoteServiceException(e.getMessage());
-  }
-  for (Future<AnnualizedReturn> annualizedReturnFuture : annualizedReturnFutureList) {
-    try {
-      annualizedReturns.add(annualizedReturnFuture.get());
-    } catch (InterruptedException | ExecutionException e) {
-      throw new StockQuoteServiceException(e.getMessage());
-    }
-  }
-  executorService.shutdown();
-  return annualizedReturns.stream().sorted(getComparator()).collect(Collectors.toList());
-}
+//   ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
+//   List<AnnualizedReturn> annualizedReturns = new ArrayList<>();
+//   List<AnnualizedReturnTask> annualizedReturnTaskList = new ArrayList<>();
+//   List<Future<AnnualizedReturn>> annualizedReturnFutureList = null;
+//   for (PortfolioTrade portfolioTrade : portfolioTrades)
+//     annualizedReturnTaskList
+//         .add(new AnnualizedReturnTask(portfolioTrade, service, endDate));
+//   try {
+//     annualizedReturnFutureList = executorService.invokeAll(annualizedReturnTaskList);
+//   } catch (InterruptedException e) {
+//     throw new StockQuoteServiceException(e.getMessage());
+//   }
+//   for (Future<AnnualizedReturn> annualizedReturnFuture : annualizedReturnFutureList) {
+//     try {
+//       annualizedReturns.add(annualizedReturnFuture.get());
+//     } catch (InterruptedException | ExecutionException e) {
+//       throw new StockQuoteServiceException(e.getMessage());
+//     }
+//   }
+//   executorService.shutdown();
+//   return annualizedReturns.stream().sorted(getComparator()).collect(Collectors.toList());
+// }
 
 // private String getToken() {
 //   return "31538ba9b3b4984d4577c6ae43e001ec8c0e2d21";
