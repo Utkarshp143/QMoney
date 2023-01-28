@@ -315,6 +315,25 @@ public class PortfolioManagerApplication {
   }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   public static void main(String[] args) throws Exception {
     Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
     ThreadContext.put("runId", UUID.randomUUID().toString());
@@ -332,7 +351,7 @@ public class PortfolioManagerApplication {
     return "31538ba9b3b4984d4577c6ae43e001ec8c0e2d21";
     //return "59892a96542d99303fafeedbe3f970bcd2100c5c";
   }
-}
+
 
     // return trades.stream().map(trade -> trades).map(t -> {List<Candle> candles = fetchCandles(trade, endDate, getToken());
       
@@ -560,3 +579,9 @@ public class PortfolioManagerApplication {
 //   ObjectMapper objectMapper = getObjectMapper();
 //   return objectMapper.readValue(contents, PortfolioTrade[].class);
 // }
+
+
+
+  }
+
+

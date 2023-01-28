@@ -109,6 +109,36 @@ private Double getClosingPriceOnEndDate(List<Candle> candles) {
    return candles.get(candles.size()-1).getClose();
 }
 
+@Override
+public List<AnnualizedReturn> calculateAnnualizedReturnParallel(
+    List<PortfolioTrade> portfolioTrades, LocalDate endDate, int numThreads)
+    throws InterruptedException, StockQuoteServiceException {
+  // TODO Auto-generated method stub
+
+ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
+List<AnnualizedReturn> annualizedReturns = new ArrayList<>();
+List<AnnualizedReturnTask> annualizedReturnTaskList = new ArrayList<>();
+List<Future<AnnualizedReturn>> annualizedReturnFutureList = null;
+for (PortfolioTrade portfolioTrade : portfolioTrades)
+  annualizedReturnTaskList
+      .add(new AnnualizedReturnTask(portfolioTrade, service, endDate));
+try {
+  annualizedReturnFutureList = executorService.invokeAll(annualizedReturnTaskList);
+} catch (InterruptedException e) {
+  throw new StockQuoteServiceException(e.getMessage());
+}
+for (Future<AnnualizedReturn> annualizedReturnFuture : annualizedReturnFutureList) {
+  try {
+    annualizedReturns.add(annualizedReturnFuture.get());
+  } catch (InterruptedException | ExecutionException e) {
+    throw new StockQuoteServiceException(e.getMessage());
+  }
+}
+executorService.shutdown();
+return annualizedReturns.stream().sorted(getComparator()).collect(Collectors.toList());
+
+}
+
 // @Override
 // public List<AnnualizedReturn> calculateAnnualizedReturnParallel(
 //     List<PortfolioTrade> portfolioTrades, LocalDate endDate, int numThreads)

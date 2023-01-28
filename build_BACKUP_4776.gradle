@@ -1,3 +1,4 @@
+
 plugins {
     id 'java'
     id 'maven-publish'
@@ -111,4 +112,7 @@ task verifyMavenJarsCreated {
     }
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> d1a3fbb784a09dce6c54c41d1bff2f48265b191f

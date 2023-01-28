@@ -44,3 +44,4 @@ public enum StockQuoteServiceFactory {
   //  Run the tests using command below and make sure it passes
   //  ./gradlew test --tests StockQuoteServiceFactory
  
+

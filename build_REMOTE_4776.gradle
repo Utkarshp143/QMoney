@@ -1,3 +1,4 @@
+
 plugins {
     id 'java'
     id 'maven-publish'
@@ -110,5 +111,4 @@ task verifyMavenJarsCreated {
         println("All Maven repository files are created and in place")
     }
 }
-
 

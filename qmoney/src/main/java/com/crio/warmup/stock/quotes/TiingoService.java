@@ -64,6 +64,9 @@ public static String getToken() {
   return "31538ba9b3b4984d4577c6ae43e001ec8c0e2d21";
   //return "59892a96542d99303fafeedbe3f970bcd2100c5c";
 }
+
+
+}
   // TODO: CRIO_TASK_MODULE_ADDITIONAL_REFACTOR
   //  Now we will be separating communication with Tiingo from PortfolioManager.
   //  Generate the functions as per the declarations in the interface and then
@@ -77,6 +80,8 @@ public static String getToken() {
 
   // TODO: CRIO_TASK_MODULE_ADDITIONAL_REFACTOR
   // Write a method to create appropriate url to call tiingo service.
+
+
 
 
 
@@ -98,27 +103,6 @@ public static String getToken() {
   //     are able to explicitly handle this exception upfront.
 
   //CHECKSTYLE:OFF
-
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // package com.crio.warmup.stock.quotes;
 
