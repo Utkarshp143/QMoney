@@ -35,8 +35,7 @@ public class AlphavantageService implements StockQuotesService {
     this.restTemplate = restTemplate;
   }
   @Override
-  public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to)
-      throws Exception {
+  public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to) throws StockQuoteServiceException {
         String responseString = restTemplate.getForObject(getUrl(symbol), String.class);
         // String response = restTemplate.getForObject(buildUri(symbol), String.class);
         System.out.println(responseString);
@@ -54,7 +53,7 @@ public class AlphavantageService implements StockQuotesService {
         } 
         catch (JsonProcessingException e) 
         {
-          throw new Exception(e.getMessage());
+          throw new StockQuoteServiceException(e.getMessage());
         }
 
         List<Candle> alphavantageCandles = new ArrayList<>();

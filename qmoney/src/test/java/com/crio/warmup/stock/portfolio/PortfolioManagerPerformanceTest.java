@@ -1,4 +1,3 @@
-
 package com.crio.warmup.stock.portfolio;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -80,7 +79,7 @@ class PortfolioManagerPerformanceTest {
 
   @Test
   public void calculateExtrapolatedAnnualizedReturn()
-      throws Exception {
+      throws JsonProcessingException, StockQuoteServiceException, InterruptedException {
     runConcurrencyTest(false);
   }
 
@@ -92,7 +91,7 @@ class PortfolioManagerPerformanceTest {
 
 
   private void runConcurrencyTest(boolean withException)
-      throws Exception {
+      throws JsonProcessingException, StockQuoteServiceException, InterruptedException {
     this.portfolioManager = getPortfolioManager(withException);
     //given
     PortfolioTrade trade1 = new PortfolioTrade("AAPL", 50, LocalDate.parse("2019-01-02"));
@@ -119,7 +118,7 @@ class PortfolioManagerPerformanceTest {
   }
 
   private PortfolioManagerImpl getPortfolioManager(boolean withException)
-      throws Exception {
+      throws JsonProcessingException, StockQuoteServiceException {
     Mockito.doAnswer(invocation -> getCandles(aaplQuotes, false))
         .when(stockQuotesService).getStockQuote(eq("AAPL"), any(), any());
     Mockito.doAnswer(invocation -> getCandles(msftQuotes, withException))
@@ -128,7 +127,7 @@ class PortfolioManagerPerformanceTest {
         .when(stockQuotesService).getStockQuote(eq("GOOGL"), any(), any());
     return new PortfolioManagerImpl(stockQuotesService);
   }
-
+  
 
   private List<TiingoCandle> getCandles(String responseText, boolean throwException)
       throws JsonProcessingException {

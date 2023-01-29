@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import com.crio.warmup.stock.exception.StockQuoteServiceException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,6 +19,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 public class TiingoService implements StockQuotesService {
@@ -31,20 +34,39 @@ public class TiingoService implements StockQuotesService {
 
   @Override
   public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to) 
-      throws JsonProcessingException,Exception {
+      throws  StockQuoteServiceException {
+    // try {
+    //   String result = restTemplate.getForObject(buildUri(symbol, from, to), String.class);
+    //   if (result == null || result.isEmpty()) {
+    //     throw new StockQuoteServiceException("No response");
+    //   }
+    //   List<TiingoCandle> collection = getObjectMapper()
+    //       .readValue(result, new TypeReference<ArrayList<TiingoCandle>>() {
+    //       });
+    //   return new ArrayList<Candle>(collection);
+    // } catch (JsonProcessingException  e) {
+    //   throw new StockQuoteServiceException(e.getMessage());
+    // }
+    String tiingoURL = buildUri(symbol, from, to);
+    String responseString=null;
     try {
-      String result = restTemplate.getForObject(buildUri(symbol, from, to), String.class);
-      if (result == null || result.isEmpty()) {
-        throw new Exception("No response");
-      }
-      List<TiingoCandle> collection = getObjectMapper()
-          .readValue(result, new TypeReference<ArrayList<TiingoCandle>>() {
-          });
-      return new ArrayList<Candle>(collection);
-    } catch (RuntimeException e) {
-      e.printStackTrace();
+      responseString = restTemplate.getForObject(tiingoURL, String.class);
+    } catch (HttpClientErrorException e) {
+        throw new StockQuoteServiceException("TooManyRequests: 429 Unknown Status Code");
     }
-    return Collections.emptyList();
+    
+    TiingoCandle[] tiingoCandleArray;
+    try {
+      tiingoCandleArray = getObjectMapper().readValue(responseString, TiingoCandle[].class);
+      if (tiingoCandleArray == null || responseString == null)
+        throw new StockQuoteServiceException("Invalid Response Found");
+    } catch (JsonProcessingException e) {
+      throw new StockQuoteServiceException(e.getMessage());
+    }
+    return Arrays.stream(tiingoCandleArray).sorted(Comparator.comparing(Candle::getDate))
+        .collect(Collectors.toList());
+
+
   }
 
   private static ObjectMapper getObjectMapper() {
