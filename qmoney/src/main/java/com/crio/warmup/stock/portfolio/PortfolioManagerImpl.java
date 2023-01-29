@@ -115,29 +115,97 @@ public List<AnnualizedReturn> calculateAnnualizedReturnParallel(
     throws InterruptedException, StockQuoteServiceException {
   // TODO Auto-generated method stub
 
-ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
-List<AnnualizedReturn> annualizedReturns = new ArrayList<>();
-List<AnnualizedReturnTask> annualizedReturnTaskList = new ArrayList<>();
-List<Future<AnnualizedReturn>> annualizedReturnFutureList = null;
-for (PortfolioTrade portfolioTrade : portfolioTrades)
-  annualizedReturnTaskList
-      .add(new AnnualizedReturnTask(portfolioTrade, service, endDate));
-try {
-  annualizedReturnFutureList = executorService.invokeAll(annualizedReturnTaskList);
-} catch (InterruptedException e) {
-  throw new StockQuoteServiceException(e.getMessage());
+// ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
+// List<AnnualizedReturn> annualizedReturns = new ArrayList<>();
+// List<AnnualizedReturnTask> annualizedReturnTaskList = new ArrayList<>();
+// List<Future<AnnualizedReturn>> annualizedReturnFutureList = null;
+// for (PortfolioTrade portfolioTrade : portfolioTrades)
+//   annualizedReturnTaskList
+//       .add(new AnnualizedReturnTask(portfolioTrade, service, endDate));
+// try {
+//   annualizedReturnFutureList = executorService.invokeAll(annualizedReturnTaskList);
+// } catch (InterruptedException e) {
+//   throw new StockQuoteServiceException(e.getMessage());
+// }
+// for (Future<AnnualizedReturn> annualizedReturnFuture : annualizedReturnFutureList) {
+//   try {
+//     annualizedReturns.add(annualizedReturnFuture.get());
+//   } catch (InterruptedException | ExecutionException e) {
+//     throw new StockQuoteServiceException(e.getMessage());
+//   }
+// }
+// executorService.shutdown();
+// return annualizedReturns.stream().sorted(getComparator()).collect(Collectors.toList());
+
+if (portfolioTrades.isEmpty()) {
+  return new ArrayList<>();
 }
-for (Future<AnnualizedReturn> annualizedReturnFuture : annualizedReturnFutureList) {
+// Parallize this part
+ExecutorService executor = Executors.newFixedThreadPool(numThreads);
+List<Future<AnnualizedReturn>> futures = new ArrayList<>();
+for(PortfolioTrade trade: portfolioTrades) {
+  Future<AnnualizedReturn> future = executor.submit(() -> {
+                                          List<Candle> candles = service.getStockQuote(trade.getSymbol(), trade.getPurchaseDate(), endDate);
+                                          double buyPrice = getOpeningPriceOnStartDate(candles);
+                                          double sellPrice = getClosingPriceOnEndDate(candles);
+                                          AnnualizedReturn annualizedReturn = calculateAnnualizedReturns(endDate, trade, buyPrice, sellPrice);
+                                          // annualizedReturnsList.add(annualizedReturn);
+                                          return annualizedReturn;
+                                        });
+  futures.add(future);
+}
+
+List<AnnualizedReturn> annualizedReturnsList = new ArrayList<>(); 
+for(Future<AnnualizedReturn> future: futures) {
   try {
-    annualizedReturns.add(annualizedReturnFuture.get());
+    annualizedReturnsList.add(future.get());
   } catch (InterruptedException | ExecutionException e) {
     throw new StockQuoteServiceException(e.getMessage());
+  } catch (Exception e) {
+    throw new StockQuoteServiceException("Exception!!!");
   }
 }
-executorService.shutdown();
-return annualizedReturns.stream().sorted(getComparator()).collect(Collectors.toList());
 
+// shut the exceutor
+executor.shutdown();
+try{
+  if(!executor.awaitTermination(800,TimeUnit.MILLISECONDS)){
+    executor.shutdownNow();
 }
+}catch(InterruptedException e){
+  executor.shutdownNow();
+}
+
+//sort in descending
+Collections.sort(annualizedReturnsList,getComparator());
+
+return annualizedReturnsList;
+}
+
+private AnnualizedReturn calculateAnnualizedReturns(LocalDate endDate, PortfolioTrade trade,
+    double buyPrice, double sellPrice) {
+      // List<AnnualizedReturn> annualizedReturnsList = new ArrayList<>();
+
+     
+        
+      //   List<Candle> candles = getStockQuote(trade.getSymbol(), trade.getPurchaseDate(), endDate);
+    
+        // defining price of buy and sell Price
+    
+        // double buyPrice = getOpeningPriceOnStartDate(candles);
+        // double sellPrice = getClosingPriceOnEndDate(candles);
+        double totalReturn = (sellPrice - buyPrice) / buyPrice;
+        double total_num_years = ChronoUnit.DAYS.between(trade.getPurchaseDate(),endDate)/365.24;
+        double annualized_returns = Math.pow((1+totalReturn),(1 / total_num_years)) - 1;
+        
+        // AnnualizedReturn  annualizedReturn = 
+        
+        return (new AnnualizedReturn(trade.getSymbol(),annualized_returns,totalReturn));
+    
+    //     annualizedReturnsList.add(annualizedReturn);
+      
+    //  Collections.sort(annualizedReturnsList);
+    //   return annualizedReturnsList;}
 
 // @Override
 // public List<AnnualizedReturn> calculateAnnualizedReturnParallel(
@@ -224,4 +292,5 @@ return annualizedReturns.stream().sorted(getComparator()).collect(Collectors.toL
 
 
 
-}
+    }
+  }
